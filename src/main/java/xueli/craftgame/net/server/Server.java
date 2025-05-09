@@ -102,14 +102,15 @@ public abstract class Server extends SimpleChannelInboundHandler<Message> implem
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		Channel incoming = ctx.channel();
 		logger.info("Inactive: " + incoming.remoteAddress().toString());
-
+		playerNames.remove(incoming.remoteAddress());
+		ctx.close();
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		cause.printStackTrace();
+		playerNames.remove(ctx.channel().remoteAddress());
 		ctx.close();
-
 	}
 
 	private void sendToAll(Message message) {
