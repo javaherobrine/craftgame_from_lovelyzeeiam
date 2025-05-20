@@ -78,8 +78,8 @@ public final class LinkedListSplicer {
 		}
 		UNSAFE.getAndSetObject(tail, LINKEDLIST_NODE_NEXT, head);
 		UNSAFE.getAndSetObject(head, LINKEDLIST_NODE_PREV, tail);
+		UNSAFE.getAndSetObject(l1,LINKEDLIST_TAIL,UNSAFE.getAndSetObject(l2,LINKEDLIST_TAIL,null));
 		UNSAFE.getAndSetObject(l2, LINKEDLIST_HEAD, null);
-		UNSAFE.getAndSetObject(l2, LINKEDLIST_TAIL, null);
 		UNSAFE.getAndSetInt(l1, LINKEDLIST_SIZE,
 				UNSAFE.getInt(l1, LINKEDLIST_SIZE) + UNSAFE.getAndSetInt(l2, LINKEDLIST_SIZE, 0));
 	}
