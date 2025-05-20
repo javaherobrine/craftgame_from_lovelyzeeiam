@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -73,14 +74,19 @@ public class Files {
 		return data;
 	}
 
-	public static ArrayList<File> getAllFiles(File file) {
-		ArrayList<File> files = new ArrayList<>();
+	public static LinkedList<File> getAllFiles(File file) {
+		LinkedList<File> files = new LinkedList<>();
 
 		if (file.isDirectory()) {
 			File[] allFiles = file.listFiles();
 			for (int i = 0; i < allFiles.length; i++) {
 				File f = allFiles[i];
-				files.addAll(getAllFiles(f));
+				if(f.isFile()) {
+					files.add(f);
+					continue;
+				}
+				
+				LinkedListSplicer.splice(files, getAllFiles(f));
 
 			}
 
@@ -92,7 +98,7 @@ public class Files {
 		return files;
 	}
 
-	public static ArrayList<File> getAllFiles(String path) {
+	public static LinkedList<File> getAllFiles(String path) {
 		return getAllFiles(new File(path));
 	}
 
