@@ -47,6 +47,7 @@ public class SegmentTree {
 		rightNode.lazy += node.lazy;
 		leftNode.value += node.lazy * (leftNode.right - leftNode.left + 1);
 		rightNode.value += node.lazy * (rightNode.right - rightNode.left + 1);
+		node.lazy = 0;
 	}
 
 	private int sum(int nodeIndex, int left, int right) {
