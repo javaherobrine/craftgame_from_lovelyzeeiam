@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.LinkedList;
 
 import xueli.utils.io.Files;
 
@@ -56,7 +57,7 @@ public class ClazzUtils {
 		// process current module
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		String path = loader.getResource("./").getPath();
-		ArrayList<File> allFiles = Files.getAllFiles(path);
+		LinkedList<File> allFiles = Files.getAllFiles(path);
 
 		for (File file : allFiles) {
 			if (!file.exists())

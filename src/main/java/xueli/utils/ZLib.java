@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.zip.DeflaterInputStream;
+import java.util.zip.InflaterInputStream;
 import java.util.zip.DeflaterOutputStream;
 
 import io.netty.buffer.ByteBuf;
@@ -30,7 +30,7 @@ public class ZLib {
 
 	public static byte[] decompress(ByteBuf input, int size) throws IOException {
 		ByteBuf compressed = input.readBytes(size);
-		try (DeflaterInputStream in = new DeflaterInputStream(new InputStream() {
+		try (InflaterInputStream in = new InflaterInputStream(new InputStream() {
 			@Override
 			public int read() throws IOException {
 				return compressed.readByte();

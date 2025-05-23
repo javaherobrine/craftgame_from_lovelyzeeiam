@@ -3,6 +3,7 @@ package xueli.utils.buffer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.BufferUnderflowException;
 
 public class ByteBufferInputStream extends InputStream {
 
@@ -15,7 +16,11 @@ public class ByteBufferInputStream extends InputStream {
 
 	@Override
 	public int read() throws IOException {
-		return in.get();
+		try {
+			return in.get();
+		}catch(BufferUnderflowException e) {
+			return -1;//it's EOF, act like a ByteArrayInputStream
+		}
 	}
 
 }
