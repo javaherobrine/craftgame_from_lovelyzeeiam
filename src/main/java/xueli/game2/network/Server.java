@@ -1,6 +1,6 @@
 package xueli.game2.network;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
@@ -26,7 +26,7 @@ public class Server<T extends ServerClientConnection> implements RunnableLifeCyc
 	private final Protocol clientboundProtocol, serverboundProtocol;
 	private final Supplier<T> connFunc;
 
-	private final ArrayList<T> connections = new ArrayList<>();
+	private final LinkedList<T> connections = new LinkedList<>();
 
 	public Server(int port, Supplier<T> connFunc, Protocol clientboundProtocol, Protocol serverboundProtocol) {
 		this.port = port;
@@ -48,7 +48,9 @@ public class Server<T extends ServerClientConnection> implements RunnableLifeCyc
 					@Override
 					protected void initChannel(Channel ch) throws Exception {
 						T conn = connFunc.get();
-						connections.add(conn);
+						synchronized(connections) {
+							connections.add(conn);
+						}
 
 						ch.pipeline().addLast(new PacketSizePrefixer()).addLast(new PacketEncoder(clientboundProtocol))
 
@@ -65,19 +67,25 @@ public class Server<T extends ServerClientConnection> implements RunnableLifeCyc
 	public void tick() {
 		// we can get an iterator of the list and we can remove it immediately, learnt
 		// from source code of Minecraft
-		Iterator<T> iterable = connections.iterator();
-		while (iterable.hasNext()) {
-			T t = iterable.next();
-			t.tick();
-			if (!t.isConnected()) {
-				iterable.remove();
+		// But the code must be "synchronized", or it'll throw a ConcurrentModificationException
+		//@see java.util.ConcurrentModificationException
+		synchronized(connections) {
+			Iterator<T> iterable = connections.iterator();
+			while (iterable.hasNext()) {
+				T t = iterable.next();
+				t.tick();
+				if (!t.isConnected()) {
+					iterable.remove();
+				}
 			}
 		}
 
 	}
 
 	public void broadcast(Object obj) {
-		this.connections.forEach(l -> l.writeAndFlush(obj));
+		synchronized(connections) {
+			this.connections.forEach(l -> l.writeAndFlush(obj));
+		}
 
 	}
 
